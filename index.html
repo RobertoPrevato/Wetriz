@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Wetriz</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <meta name="twitter:image:src" content="images/wetriz.jpg" />
+  <meta name="twitter:site" content="@RobertoPrevato" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Web Tetris" />
+  <meta name="twitter:description" content="Web Tetris grid implementation by Roberto Prevato" />
+  <meta property="og:image" content="images/wetriz.jpg" />
+  <meta property="og:image:alt" content="Web Tetris grid implementation by Roberto Prevato" />
+  <meta property="og:site_name" content="GitHub" />
+  <meta property="og:type" content="object" />
+  <meta property="og:title" content="Web Tetris grid implementation by Roberto Prevato" />
+  <meta property="og:url" content="https://github.com/RobertoPrevato/Wetriz" />
+  <meta property="og:description" content="Web Tetris grid implementation by Roberto Prevato" />
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        background-color: #061731;
+        background-repeat: no-repeat;
+    }
+    #header {
+        height: 62px;
+        background-image: url("images/wetriz_header.png");
+        background-repeat: no-repeat;
+        margin-bottom: 2rem;
+    }
+    #stage {
+      width: 450px;
+      height: 600px;
+      position: relative;
+      border: 2px solid black;
+      padding: 1rem;
+    }
+    canvas { position: absolute; }
+    #particles { z-index: 4; }
+    #canvas { z-index: 3 }
+    #grid { z-index: 2 }
+    #background-layer { z-index: 1 }
+  </style>
+</head>
+<body class="theme-base">
+<div id="main">
+  <div id="header"></div>
+  <div id="stage">
+    <canvas id="particles" width="450" height="600"></canvas>
+    <canvas id="canvas" width="450" height="600"></canvas>
+    <canvas id="grid" width="450" height="600"></canvas>
+  </div>
+  <div id="main-footer-wrapper">
+    <footer id="main-footer" data-bind="template: { name: 'main-footer' }"></footer>
+  </div>
+</div>
+<script src="scripts/libs/lodash.js"></script>
+<script src="scripts/libs/jquery.js"></script>
+<script src="scripts/libs/r.js"></script>
+
+<!-- components -->
+<script src="scripts/shared/components/extend.js"></script>
+<script src="scripts/shared/components/events.js"></script>
+<script src="scripts/shared/components/event.js"></script>
+<script src="scripts/shared/components/array.js"></script>
+
+<script src="scripts/areas/animations/animation.js"></script>
+<script src="scripts/areas/animations/anivalue.js"></script>
+
+<!--game logic-->
+<script src="scripts/areas/grids/grid-cell.js"></script>
+<script src="scripts/areas/grids/grid-base.js"></script>
+<script src="scripts/areas/grids/grid-block.js"></script>
+<script src="scripts/areas/grids/grid-canvas.js"></script>
+
+<script src="scripts/areas/tetris/tetris-grid-block.js"></script>
+<script src="scripts/areas/tetris/tetris-grid.js"></script>
+
+<script src="scripts/areas/controls/keyboard-controls.js"></script>
+
+<script src="scripts/areas/particles/particle.js"></script>
+<script src="scripts/areas/particles/particle-canvas.js"></script>
+
+<script>
+  (function () {
+
+    R("test", ["animation", "anivalue"], function (Animation, AniValue) {
+      return;
+
+      function Value(from, to, length) {
+        if (!length) length = 500;
+        this.v = from;
+        var self = this;
+        var freq = 20;
+        var times = length / freq;
+        var jump = Math.abs(from - to) / times;
+        var ani = new Animation({
+          auto: 0,
+          freq: freq,
+          length: length,
+          step: function (i) {
+            var v = self.v += jump;
+
+            $("#sq").css("left", v + "px");
+          },
+          onStop: function () {
+            var v = self.v = to;
+            //self.trigger("step", v);
+            $("#sq").css("left", v + "px");
+          }
+        });
+        this.start = function () {
+          ani.start();
+        };
+      };
+
+      var a = new Value(0, 500);
+
+      var b = new AniValue({
+        auto: 0,
+        from: 0,
+        to: 500,
+        fn: function (v) {
+          $("#sq2").css("left", v + "px");
+        }
+      });
+
+      a.start();
+      b.start();
+
+      setTimeout(function () {
+        new AniValue({
+          from: 500,
+          to: 0,
+          fn: function (v) {
+            $("#sq2").css("left", v + "px");
+          }
+        });
+      }, 1000)
+    });
+
+    R("dashboard.routes", [
+      "tetris-grid",
+      "tetris-block",
+      "grid-canvas",
+      "particle-canvas",
+      "keyboard-controls"], function (Grid, Block, CanvasRenderer, ParticlesCanvasRenderer, KeyboardControls) {
+
+      var g = new Grid({});
+
+      function t() {
+        return g.activeBlock;
+      };
+      g.on("start", function () {
+        draw();
+      });
+
+      g.start();
+
+      var controls = new KeyboardControls({
+        ns: "game",
+        keys: {
+          left: 37,
+          right: 39,
+          up: 38,
+          down: 40,
+          pause: 27,
+          smash: 32,
+          esc: 27,
+          rshift: {
+            code: 16,
+            shift: true
+          }
+        }
+      }, { debug: !true });
+
+      controls.bindEvents();
+
+      controls.on("esc", function () {
+        //stop the game
+        console.log(gameInterval ? "...stop" : "...start");
+        gameInterval ? stop() : start();
+      });
+
+      controls.on("left", function () {
+        t().moveLeft();
+        draw();
+      });
+
+      controls.on("right", function () {
+        t().moveRight();
+        draw();
+      });
+
+      controls.on("down", function () {
+        t().moveDown();
+        draw();
+      });
+
+      controls.on("up", function () {
+        t().rotate();
+        draw();
+      });
+
+      controls.on("smash", function () {
+        t().smash();
+        draw();
+      });
+
+      controls.on("rshift", function () {
+        console.log("R + Shift!!");
+      });
+
+      g.on("block:collides", function () {
+        if (!t().hasRoom()) {
+          //game over!
+          controls.unbindEvents();
+          window.clearInterval(gameInterval);
+          console.log("Game Over!");
+        }
+        draw();
+      });
+
+      g.on("debug", function () {
+        CanvasRenderer.squares({ points: g.occupiedCells() }, { color: "#F00" });
+      });
+
+      var gameInterval;
+      // start function
+      function start() {
+        // set interval
+        gameInterval = setInterval(function () {
+          var block = t();
+          if (block.canMoveDown()) {
+            t().moveDown();
+            draw();
+          } else {
+            block.collide();
+          }
+        }, 800);
+      }
+
+      function stop() {
+        window.clearInterval(gameInterval);
+        gameInterval = null;
+      };
+
+      //TODO: organize better
+      var can = document.getElementById("particles"),
+          context2D = can.getContext("2d");
+
+      g.on("deleting", function (debris) {
+        // explosion effect
+        for (var i = 0, l = debris.length; i < l; i++) {
+            var d = debris[i], x = d.x, y = d.y;
+            var light = d.color;
+            particles = particles.concat(ParticlesCanvasRenderer.createExplosion(x, y, light));
+         }
+         ParticlesCanvasRenderer.update(context2D, 20);
+      });
+
+
+      var frameDelay = 25;
+      var particles = [];
+      function particlesDraw(frameDelay)
+      {
+        //clear:
+        context2D.clearRect(0, 0, 1000, 1000);
+
+        // update and draw particles
+        for (var i = 0; i < particles.length; i++)
+        {
+          var particle = particles[i];
+
+          particle.update(frameDelay);
+          ParticlesCanvasRenderer.drawParticle(context2D, particle);
+        }
+      }
+
+      setInterval(function() {
+        particlesDraw(frameDelay);
+      }, frameDelay);
+
+      var can = document.getElementById("grid");
+      CanvasRenderer.drawGrid(can, g);
+
+      function draw() {
+        var c = canvas.getContext("2d");
+        c.clearRect(0, 0, 450, 600);
+
+        //first, draw the debris
+        CanvasRenderer.images(canvas, { points: g.debris });
+
+        CanvasRenderer.images(canvas, g.activeBlock);
+        CanvasRenderer.images(canvas, g.nextBlock);
+      }
+
+      var back = false;
+
+      setTimeout(function () {
+        draw();
+        start();
+      }, 20);
+      window.draw = draw;
+    });
+  })();
+</script>
+</body>
+</html>
