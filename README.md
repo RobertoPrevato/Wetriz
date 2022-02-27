@@ -16,13 +16,7 @@ Try it here: [https://robertoprevato.github.io/Wetriz/](https://robertoprevato.g
 | <kbd>Space</kbd> | Smash down   |
 | <kbd>ESC</kbd>   | Toggle pause |
 
-## How to test locally
-
-Clone the repository and either open `index.html` directly in a
-browser, or start a local HTTP server to serve the files from the root folder
-of the repository. For example, using Python 3 `python -m http.server 44777`.
-
-## Disclaimer 1: this is ancient code! 🦖
+## Disclaimer 1: this code is ancient! 🦖 🌴 🦕
 The code I share in this repository is old: if I had to write it today, I would
 certainly use TypeScript. I wrote the first implementation of my JavaScript web tetris
 before the HTML5 Canvas was available in most browsers, and the first implementation even
@@ -53,6 +47,12 @@ touch events, but the code here is only a work in progress of a better version,
 not completed and not handling swipe events.
 
 ---
+
+## How to test locally
+
+Clone the repository and either open `index.html` directly in a
+browser, or start a local HTTP server to serve the files from the root folder
+of the repository. For example, using Python 3 `python -m http.server 44777`.
 
 ## Other notes
 
