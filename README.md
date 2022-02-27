@@ -3,8 +3,12 @@ Tetris grid implemented in JavaScript.
 
 ![Wetriz](./wetriz.gif)
 
+How to test: clone the repository and either open `index.html` directly in a
+browser, or start a local HTTP server to serve the files from the root folder
+of the repository. For example, using Python 3 `python -m http.server 44777`.
+
 ## Disclaimer 1: this is ancient code! 🦖
-The code I am sharing in this repository is old: if I had to write it today, I would
+The code I share in this repository is old: if I had to write it today, I would
 certainly use TypeScript. I wrote the first implementation of my JavaScript web tetris
 before the HTML5 Canvas was available in most browsers, and the first implementation even
 supported **Internet Explorer 6**! The code I share here is an adaptation of that
