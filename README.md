@@ -1,13 +1,9 @@
 # Wetriz
 Tetris grid implemented in JavaScript.
 
-Test it here: [https://robertoprevato.github.io/Wetriz/](https://robertoprevato.github.io/Wetriz/).
+Try it here: [https://robertoprevato.github.io/Wetriz/](https://robertoprevato.github.io/Wetriz/).
 
 ![Wetriz](./wetriz.gif)
-
-How to test locally: clone the repository and either open `index.html` directly in a
-browser, or start a local HTTP server to serve the files from the root folder
-of the repository. For example, using Python 3 `python -m http.server 44777`.
 
 ## Controls
 
@@ -19,6 +15,12 @@ of the repository. For example, using Python 3 `python -m http.server 44777`.
 | <kbd>🠄 Arw</kbd> | Move left    |
 | <kbd>Space</kbd> | Smash down   |
 | <kbd>ESC</kbd>   | Toggle pause |
+
+## How to test locally
+
+Clone the repository and either open `index.html` directly in a
+browser, or start a local HTTP server to serve the files from the root folder
+of the repository. For example, using Python 3 `python -m http.server 44777`.
 
 ## Disclaimer 1: this is ancient code! 🦖
 The code I share in this repository is old: if I had to write it today, I would
