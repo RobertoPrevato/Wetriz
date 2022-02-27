@@ -25,6 +25,8 @@
         overflow-x: hidden;
         background-color: #061731;
         background-repeat: no-repeat;
+        font-family: 'Courier New', Courier, monospace;
+        color: #fff;
     }
     #header {
         height: 62px;
@@ -44,6 +46,14 @@
     #canvas { z-index: 3 }
     #grid { z-index: 2 }
     #background-layer { z-index: 1 }
+    #links, #notes { padding: 1rem; }
+    a { color: #fff; }
+    table {
+        border: 1px dotted #fff;
+        text-align: left;
+        margin: 10px 0;
+    }
+    th, td { padding: 2px 4px; }
   </style>
 </head>
 <body class="theme-base">
@@ -54,8 +64,25 @@
     <canvas id="canvas" width="450" height="600"></canvas>
     <canvas id="grid" width="450" height="600"></canvas>
   </div>
-  <div id="main-footer-wrapper">
-    <footer id="main-footer" data-bind="template: { name: 'main-footer' }"></footer>
+  <div id="links">
+    <a href="https://github.com/RobertoPrevato/Wetriz">GitHub RobertoPrevato/Wetriz</a>
+  </div>
+  <div id="notes">
+    <table>
+        <caption>Controls</caption>
+        <thead>
+            <tr><th>Key</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><kbd>🠅 Arw</kbd></td><td>Rotate</td></tr>
+            <tr><td><kbd>🠆 Arw</kbd></td><td>Move right</td></tr>
+            <tr><td><kbd>🠇 Arw</kbd></td><td>Move down</td></tr>
+            <tr><td><kbd>🠄 Arw</kbd></td><td>Move left</td></tr>
+            <tr><td><kbd>Space</kbd></td><td>Smash down</td></tr>
+            <tr><td><kbd>ESC</kbd></td><td>Toggle pause</td></tr>
+        </tbody>
+    </table>
+    <em>The grid supports only desktop browsers - sorry.</em>
   </div>
 </div>
 <script src="scripts/libs/lodash.js"></script>
